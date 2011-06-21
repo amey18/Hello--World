@@ -6,7 +6,7 @@ namespace WebApplication1
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblSome.Text = "Hello New user";
+            lblSome.Text = "Hello New user amey";
             //todo: something to do later
             lblSome.Text += ". And Hello Amey Bordikar new";
         }
