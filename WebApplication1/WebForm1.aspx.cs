@@ -7,6 +7,8 @@ namespace WebApplication1
         protected void Page_Load(object sender, EventArgs e)
         {
             lblSome.Text = "Hello Amey";
+            //todo: something to do later
+            lblSome.Text += ". And Hello All";
         }
     }
 }
