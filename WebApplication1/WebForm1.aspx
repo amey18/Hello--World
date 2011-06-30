@@ -7,10 +7,19 @@
     <title>Test</title>
 </head>
 <body>
-    <form id="form1" runat="server">
+    <form id="form1" runat="server"> 
+    <asp:Label ID="lblTitle" runat="server"></asp:Label>
     <div>
-        <asp:Label ID="lblSome" runat="server"></asp:Label>
-    
+        <asp:Repeater ID="rptSubscribers" runat="server">
+            <ItemTemplate>
+            test
+                Id:&nbsp;<asp:Label ID="lbl1" runat="server" Text='<%# DataBinder.Eval(Container.DataItem, "SubscriberId") %>' /><br />
+                Email:&nbsp;<asp:Label ID="lbl2" runat="server" Text='<%# DataBinder.Eval(Container.DataItem, "PrimaryEmailAddress") %>' /><br />
+                First Name:&nbsp;<asp:Label ID="lbl3" runat="server" Text='<%# DataBinder.Eval(Container.DataItem, "FirstName") %>' /><br />
+                Last Name:&nbsp;<asp:Label ID="lbl14" runat="server" Text='<%# DataBinder.Eval(Container.DataItem, "LastName") %>' /><br /><br />
+            </ItemTemplate>
+        </asp:Repeater>
+    <asp:Label ID="lblSome" runat="server"></asp:Label>
     </div>
     </form>
 </body>

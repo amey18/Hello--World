@@ -7,48 +7,111 @@ namespace WebApplication1
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+        MongoCollection<Subscriber> _subscriberCollection;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             //string connectionString = "mongodb://localhost";
-            string connectionString = "mongodb://dbh11.mongolab.com:27117/";
-            MongoServer server = MongoServer.Create(connectionString);
-            MongoDatabase db = server.GetDatabase("hmicmsm", new MongoCredentials("amey1", "somepwd"));
-            //MongoCredentials credentials = new MongoCredentials("username", "password");
-            //MongoDatabase salaries = server.GetDatabase("salaries", credentials);
-
-            //get the table
-            MongoCollection<Subscriber> subscriberCollection = db.GetCollection<Subscriber>("Subscriber");
+            _subscriberCollection = InitCollection();
 
             //get all rows of the table as a cursor
-            MongoCursor<Subscriber> subscribers = subscriberCollection.FindAll();
-            PopulateLabel(subscribers);
+            //QueryCollection();
+
             //where clause
-            var query = new QueryDocument("FirstName", "John");
-            PopulateLabel(subscriberCollection.Find(query));
+            //QueryCollection(new QueryDocument("FirstName", "John"));
 
             //find one does not return a cursor
-            PopulateLabel(subscriberCollection.FindOne());
+            //PopulateLabel(_subscriberCollection.FindOne());
 
             //Insert
-            Subscriber sub = new Subscriber
-            {
-                SubscriberId = 111,
-                PrimaryEmailAddress = "some@test.com",
-                FirstName = "Amey",
-                LastName = "Test"
-            };
-            subscriberCollection.Insert(sub);
-            PopulateLabel(subscriberCollection.FindAll());
-
-            //QueryComplete q = Query.And(
-            //    Query.EQ("FirstName", "Ernest"),
-            //    Query.EQ("LastName", "Hemingway")
-            //);
+            //InsertCollection();
             
-//            var update = Update.Set("LastName", "Chow");
-            //subscriberCollection.Remove(q);
-            //PopulateLabel(subscriberCollection.FindAll());
+            //Remove
+            //RemoveCollection();
 
+        }
+
+        private MongoCollection<Subscriber> InitCollection()
+        {
+            //string connectionString = "mongodb://dbh11.mongolab.com:27117/";
+            //MongoServer server = MongoServer.Create(connectionString);
+            //MongoDatabase db = server.GetDatabase("hmicmsm", new MongoCredentials("amey1", "somepwd"));
+
+            //for local
+            string connectionString = "mongodb://localhost";
+            MongoServer server = MongoServer.Create(connectionString);
+            MongoDatabase db = server.GetDatabase("MyCMS");
+
+            
+            //get the table
+            return db.GetCollection<Subscriber>("Subscriber");
+        }
+
+        private void QueryCollection(QueryDocument q = null)
+        {
+            MongoCursor<Subscriber> subscribers;
+            if (q == null)
+                subscribers = _subscriberCollection.FindAll();
+            else
+                subscribers = _subscriberCollection.Find(q);
+
+            PopulateRpt(subscribers);
+        }
+
+        private void InsertCollection()
+        {
+            lblTitle.Text = "Insert";
+            Subscriber sub = new Subscriber
+                                 {
+                                     SubscriberId = 111,
+                                     PrimaryEmailAddress = "some@test.com",
+                                     FirstName = "Amey",
+                                     LastName = "Test"
+                                 };
+            _subscriberCollection.Insert(sub);
+            QueryCollection();
+        }
+        
+        private void RemoveCollection()
+        {
+            lblTitle.Text = "Remove";
+
+            QueryComplete q = Query.And(
+                Query.EQ("FirstName", "Amey"),
+                Query.EQ("LastName", "Test")
+            );
+
+            _subscriberCollection.Remove(q);
+            //_subscriberCollection.RemoveAll();
+            //_subscriberCollection.FindAndRemove();
+            QueryCollection();
+        }
+
+        private void UpdateCollection()
+        {
+            lblTitle.Text = "Update";
+
+            QueryComplete q = Query.And(
+                Query.EQ("FirstName", "Ernest"),
+                Query.EQ("LastName", "Hemingway")
+            );
+
+            var update = Update.Set("LastName", "Chow");
+            _subscriberCollection.Update(q, update, UpdateFlags.Upsert);
+            QueryCollection();
+        }
+
+
+        //private void PopulateRpt(Subscriber s)
+        //{
+        //    rptSubscribers.DataSource = s;
+        //    rptSubscribers.DataBind();
+        //}
+
+        private void PopulateRpt(MongoCursor<Subscriber> subscribers)
+        {
+            rptSubscribers.DataSource = subscribers;
+            rptSubscribers.DataBind();
         }
 
         private void PopulateLabel(Subscriber s)
@@ -70,6 +133,8 @@ namespace WebApplication1
             {
                 PopulateLabel(subscriber);
             }
+
+
         }
     }
 
